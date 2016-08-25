@@ -1,0 +1,56 @@
+<div id="container">
+    <input id="username" type="text" placeholder="username" />
+    <input id="passphrase" type="password" placeholder="passphrase" />
+    <input id="redirect" type="hidden" value="{{redirect}}" />
+    <a id="login-button" href="javascript:tryLogin()">login</a>
+</div>
+
+<script src="post.js"></script>
+<script>
+    function tryLogin() {
+        document.body.style.cursor = "wait";
+        document.body.querySelector("#passphrase").disabled = true;
+        document.body.querySelector("#username").disabled = true;
+        document.body.querySelector("#login-button").classList = ["disabled"];
+        post('/login/authenticate', { username: '#username', passphrase: '#passphrase', redirect: '#redirect' });
+        document.querySelector('#passphrase').value = "";
+    }
+</script>
+
+<style>
+    input {
+        background: #e8e8e8;
+        color: #232323;
+        border: 1px solid #b1b1b1;
+        padding: 6px 10px;
+        font-family: monospace;
+    }
+
+    a#login-button {
+        padding: 6px 10px;
+        background: #3F51B5;
+        color: white;
+        text-decoration: none;
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        margin: 10px;
+    }
+
+    #container input {
+        display: block;
+        margin: 10px;
+    }
+
+    #container {
+        right: 50%;
+        bottom: 50%;
+        transform: translate(50%,50%);
+        position: absolute;
+        background: whitesmoke;
+        box-shadow: #f7f7f7 0 0 21px 6px;
+        border: solid #c1c1c1 1px;
+        padding: 40px 50px;
+        text-align: right;
+    }
+</style>

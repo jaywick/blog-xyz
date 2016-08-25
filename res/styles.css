@@ -1,0 +1,425 @@
+body {
+    margin: 0;
+    font-family: "Montserrat";
+    color: #555;
+}
+
+header#smaller-header {
+    background: #398BB6;
+    color: white;
+    height: 175px;
+}
+
+header#frontpage-header {
+    background-image: url("background.jpg");
+    background-size: cover;
+    color: white;
+    height: 100vh;
+    background-blend-mode: overlay;
+    background-color: rgba(0, 0, 0, 0);
+    background-size: auto 130vh;
+    background-repeat: no-repeat;
+}
+
+h1#main-title {
+    margin-top: 33vh;
+    text-align: center;
+    font-weight: normal;
+    font-size: 3em;
+    margin-bottom: 10px;
+    opacity: 0.95;
+}
+
+h1#smaller-title {
+    font-weight: normal;
+    font-size: 1.4em;
+    opacity: 0.95;
+    position: absolute;
+    margin-left: 100px;
+    margin-top: 68px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.blog-post p,
+.portfolio-project p,
+.blog-summary,
+#post-body-editor,
+#project-body-editor {
+    font-size: 16px;
+    line-height: 28px;
+    margin-top: 25px;
+}
+
+h1.title strong {
+    opacity: 1;
+}
+
+ul#nav {
+    list-style-type: none;
+    text-transform: lowercase;
+    margin: 0;
+    padding-top: 72px;
+    text-align: right;
+    font-weight: bold;
+    padding-right: 72px;
+}
+
+#nav li {
+    display: inline;
+    padding: 0 5px;
+}
+
+#main-subtitle {
+    text-align: center;
+    font-size: 1.5em;
+    opacity: 0.7;
+    transition: 1s;
+}
+
+.frontpage-section-works {
+    background-color: #f2f2f2;
+}
+
+ul.frontpage-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    width: 800px;
+}
+
+h2.frontpage-section-header {
+    text-align: center;
+    text-transform: uppercase;
+    color: #555;
+}
+
+.frontpage-section {
+    padding: 100px 0;
+}
+
+.frontpage-section-summary {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #555;
+}
+
+ul.frontpage-posts li {
+    list-style: none;
+    margin: 0 auto;
+    width: 800px;
+    cursor: pointer;
+    padding: 20px 40px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    min-height: 150px;
+}
+
+ul.frontpage-posts li:hover {
+    border: 1px solid #E0E0E0;
+    background-color: #f2f2f2;
+}
+
+.frontpage-works {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    width: 1000px;
+}
+
+.frontpage-work {
+    display: inline-block;
+    margin-bottom: 15px;
+    color: inherit;
+}
+
+.frontpage-work-thumbnail {
+    width: 320px;
+    height: 200px;
+    background: #969696;
+    border: 5px solid #f2f2f2;
+    background-size: auto 236px;
+    background-repeat: no-repeat;
+}
+
+.frontpage-work-title {
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.frontpage-post-summary {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+a {
+    color: #09C;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #00ccb1;
+    text-decoration: none;
+    transition: 0.5s;
+}
+
+.frontpage-post-date {
+    color: #C1C1C1;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+h3.frontpage-post-title {
+    margin: 0;
+    margin-bottom: 3px;
+}
+
+.frontpage-post-thumbnail {
+    background: #505050;
+    width: 200px;
+    height: 150px;
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background-size: 250px;
+    background-repeat: no-repeat;
+}
+
+.blog-date {
+    color: #c3c3c3;
+    font-size: 14px;
+}
+
+.blog-body,
+.about-page {
+    font-size: 16px;
+    line-height: 28px;
+    margin-top: 25px;
+}
+
+.blog-post,
+.portfolio-project,
+.about-page {
+    margin: 100px auto;
+    width: 800px;
+}
+
+.blog-summary {
+    margin: 0 auto;
+    padding: 110px 0;
+    width: 800px;
+}
+
+.blog-summary-container:nth-child(2n) {
+    background-color: #f2f2f2;
+}
+
+.project-subtitle,
+#project-subtitle {
+    font-weight: normal;
+    font-size: 14px;
+    padding-bottom: 15px;
+    border-bottom: 1px #cccccc solid;
+}
+
+ul#nav > li > a {
+    color: white;
+    opacity: 0.9;
+}
+
+ul#nav > li > a:hover {
+    color: white;
+    opacity: 1;
+}
+
+#smaller-title a {
+    color: white;
+}
+
+footer h2 {
+    font-size: 18px;
+    color: #797979;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+footer {
+    background-color: #2f2f2f;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 50px 100px;
+}
+
+hr {
+    height: 1px;
+    color: #C1C1C1;
+    background-color: #C1C1C1;
+    border: none;
+}
+
+.paging {
+    margin: 50px 0;
+    text-align: center;
+}
+
+.paging-action {
+    margin: 0 200px;
+}
+
+ul.external-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 50px;
+    text-align: center;
+}
+
+ul.external-links li {
+    display: inline-block;
+    padding: 0 20px;
+    margin: 0;
+}
+
+ul.external-links li a .fa {
+    margin-right: 10px;
+    color: gray;
+}
+
+a.admin-action {
+    padding: 5px 10px;
+    color: gray;
+    font-size: 18px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    float: right;
+}
+
+a.admin-action:hover {
+    color: #F44336;
+}
+
+#post-body-editor,
+#project-body-editor {
+    font-family: "Montserrat";
+    background: #eeeeee;
+    border: none;
+    padding: 8px 15px;
+    width: 100%;
+    min-height: 500px;
+    resize: none;
+    font-size: 1em;
+}
+
+#blog-title[contenteditable],
+#project-title[contenteditable] {
+    background: #eeeeee;
+    padding: 8px 10px;
+    width: 100%;
+}
+
+#project-subtitle {
+    background: #eeeeee;
+    padding: 8px 10px;
+    width: 100%;
+    border: none;
+}
+
+.blog-status,
+.project-status {
+    float: right;
+    padding: 0px 8px;
+    color: white;
+    border-radius: 2px;
+}
+
+.blog-status.draft,
+.project-status.draft {
+    background: #607d8b;
+}
+
+.blog-post img:not(.post-feature-image),
+.portfolio-project img:not(.project-feature-image) {
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+:not(pre) > code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #c7254e;
+    white-space: nowrap;
+    background-color: #f9f2f4;
+    border-radius: 4px;
+}
+
+pre {
+    border: 1px solid #cacaca;
+    font: 13px Consolas, 'Liberation Mono', Courier, monospace;
+    padding: 10px;
+    overflow: auto;
+    border-radius: 3px;
+    background-color: #fafafb;
+    color: #393939;
+    margin: 2em 0;
+}
+
+blockquote {
+    padding: 0 1em;
+    color: #777;
+    border-left: 0.25em solid #ddd;
+    margin-left: 20px;
+}
+
+.blog-meta input,
+.project-meta input {
+    padding: 9px 15px;
+    background: #eeeeee;
+    border: none;
+    font-family: inherit;
+    width: 300px;
+}
+
+.blog-meta,
+.project-meta {
+    margin: 10px 0;
+}
+
+kbd {
+    background: #ECEFF1;
+    font-size: 13px;
+    padding: 3px 6px;
+    font-weight: 800;
+    border-radius: 4px;
+    border: 1px solid #B0BEC5;
+    border-bottom: 2px solid #B0BEC5;
+}
+
+h1.blog-title {
+    font-size: 2em !important;
+}
+
+.blog-post h1:not(.blog-title) {
+    font-size: 1.5em;
+    margin-top: 2em;
+}
+
+.blog-post h2 {
+    font-size: 1.12em;
+    margin-top: 2em;
+}
+
+img.post-feature-image {
+    max-width: 100%;
+}
+
+.error-page {
+    font-size: 16px;
+    line-height: 28px;
+    margin-top: 25px;
+    margin: 100px auto;
+    width: 800px;
+    text-align: center;
+}

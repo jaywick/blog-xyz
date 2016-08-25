@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Logs [Admin] | blog-xyz</title>
+    {{> metalinks}}
+    <link rel="stylesheet" href="/admin.styles.css" type="text/css" />
+</head>
+<body>
+    {{> smallheader}}
+
+    <table class="admin-grid">
+        <thead>
+            <th>local time</th>
+            <th>ip</th>
+            <th>severity</th>
+            <th>message</th>
+        </thead>
+        {{#each logs}}
+        <tr>
+            <td>{{localTime}}</td>
+            <td>{{ip}}</td>
+            <td>{{severity}}</td>
+            <td style="font-family: monospace; font-weight: bold">{{message}}</td>
+        </tr>
+        {{/each}}
+    </table>
+
+    <script src="/post.js"></script>
+    {{> footer}}
+</body>
+</html>

@@ -1,0 +1,74 @@
+.admin-grid {
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th {
+    text-align: left;
+    background: #607D8B;
+    color: white;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+.admin-grid .draft {
+    color: #ababab;
+}
+
+.admin-grid th a {
+    color: inherit;
+}
+
+.compliance-issue {
+    color: #FFC107;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #607D8B;
+}
+
+.input-group {
+    display: inline-block;
+}
+
+div.admin-content {
+    padding: 20px;
+}
+
+
+a.save-post,
+a.save-project {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: white;
+    border-radius: 4px;
+    background: #4CAF50;
+    border-bottom: 4px solid #2E7D32;
+    float: right;
+}
+
+a.save-post:hover,
+a.save-project:hover {
+    background: #8bc34a;
+    border-bottom: 4px solid #689F38;
+    color: white;
+    transition: 0.2s;
+}
+
+select#post-status,
+select#project-status {
+    display: inline;
+    padding: 8px 15px;
+    background: #d6d6d6;
+    border: none;
+    font-family: inherit;
+}

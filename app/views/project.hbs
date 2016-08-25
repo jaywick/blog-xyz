@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>{{title}} | blog-xyz</title>
+    {{> metalinks}}
+    {{#if isAdmin}}
+    <link rel="stylesheet" href="/admin.styles.css" type="text/css" />
+    {{/if}}
+</head>
+<body>
+    {{> smallheader}}
+
+    {{#switch mode}}
+        {{#case "read"}}
+            <div class="portfolio-project">
+                {{#if isAdmin}}
+                    <span class="blog-status {{status}}">{{status}}</span>
+                {{/if}}
+                <h1 class="blog-title">{{title}} {{#if isAdmin}}<a class="admin-action edit-post fa fa-pencil" href="/portfolio/{{key}}/edit"></a>{{/if}}</h1>
+                <h3 class="project-subtitle">{{subtitle}}</h3>
+                <p>{{{bodyHtml}}}</p>
+            </div>
+        {{/case}}
+        {{#case "update" "create"}}
+            <div class="portfolio-project">
+                <div class="project-meta">
+                    <div class="input-group">
+                        <label>status</label>
+                        <select id="project-status">
+                            <option value="draft" {{#if isDraft}}selected="selected"{{/if}}>Draft</option>
+                            <option value="publish" {{#if isPublished}}selected="selected"{{/if}}>Published</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>key</label>
+                        <input type="text" id="project-new-key" style="width: 200px" value="{{key}}" placeholder="key"/>
+                    </div>
+
+                    <div class="input-group">
+                        <label>score</label>
+                        <input type="text" id="project-score" style="width: 77px" value="{{score}}" placeholder="score"/>
+                    </div>
+
+                    <div class="input-group">
+                        <label>feature image</label>
+                        <input type="text" id="project-featured-image-url" value="{{featureImage}}" placeholder="featured image"/>
+                    </div>
+
+                    <input type="hidden" id="project-key" value="{{key}}"/>
+                </div>
+                
+                <h1 contenteditable id="project-title">{{title}}</h1>
+                <h2 contenteditable id="project-subtitle">{{subtitle}}</h2>
+                <textarea id="project-body-editor">{{body}}</textarea>
+                
+                {{#switch mode}}
+                    {{#case "create"}}
+                        <a class="admin-action save-post" href="javascript:save('add')">Create project</a>
+                    {{/case}}
+                    {{#case "update"}}
+                        <a class="admin-action save-post" href="javascript:save('edit')">Save project</a>
+                    {{/case}}
+                {{/switch}}
+            </div>
+        {{/case}}
+    {{/switch}}
+
+    <script src="/post.js"></script>
+    {{#if isAdmin}}
+    <script>
+        function save(mode) {
+            post("/portfolio/save/" + mode, {
+                key: "#project-key",
+                newKey: "#project-new-key",
+                title: "#project-title",
+                body: "#project-body-editor",
+                status: "#project-status",
+                subtitle: "#project-subtitle",
+                featureImage: "#project-featured-image-url",
+                score: "#project-score"
+            });
+        }
+    </script>
+    {{/if}}
+
+    {{> footer}}
+
+</body>
+</html>

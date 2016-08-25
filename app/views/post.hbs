@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>{{title}} | blog-xyz</title>
+    {{> metalinks}}
+    {{#if isAdmin}}
+    <link rel="stylesheet" href="/admin.styles.css" type="text/css" />
+    {{/if}}
+</head>
+<body>
+    {{> smallheader}}
+
+    {{#switch mode}}
+        {{#case "read"}}
+        <div class="blog-post">
+            <div class="blog-date">{{humanizedDate}}</div>
+            {{#if isAdmin}}
+                <span class="blog-status {{status}}">{{status}}</span>
+            {{/if}}
+            <h1 class="blog-title">{{title}} {{#if isAdmin}}<a class="admin-action edit-post fa fa-pencil" href="/blog/edit/{{id}}"></a>{{/if}}</h1>
+            <img class="post-feature-image" src="{{{featureImageUrl}}}">
+            <p>{{{bodyHtml}}}</p>
+        </div>
+        {{/case}}
+        
+        {{#case "update" "create"}}
+            {{#if isAdmin}}
+            <div class="blog-post">
+                <div class="blog-meta">
+                    <select id="post-status">
+                        <option value="draft" {{#if isDraft}}selected="selected"{{/if}}>Draft</option>
+                        <option value="publish" {{#if isPublished}}selected="selected"{{/if}}>Published</option>
+                    </select>
+                    <input type="text" id="blog-slug" value="{{slug}}" placeholder="slug"/>
+                    <input type="text" id="blog-featured-image-url" value="{{featureImage}}" placeholder="featured image"/>
+                </div>
+
+                <h2 contenteditable id="blog-title">{{title}}</h2>
+                <textarea id="post-body-editor">{{body}}</textarea>
+                <input id="blog-id" type="hidden" value="{{id}}"/>
+
+                {{#switch mode}}
+                    {{#case "create"}}
+                        <a class="admin-action save-post" href="javascript:save('add')">Create post</a>
+                    {{/case}}
+                    {{#case "update"}}
+                        <a class="admin-action save-post" href="javascript:save('edit')">Save post</a>
+                    {{/case}}
+                {{/switch}}
+            </div>
+            {{/if}}
+        {{/case}}
+    {{/switch}}
+
+    <script src="/post.js"></script>
+    <script>
+        var appendSlug = JSON.parse('{{{json appendSlug}}}');
+
+        if (appendSlug != null) {
+            var newUrl;
+
+            if (window.location.toString().substr(-1) === "/")
+                newUrl = window.location.toString() + appendSlug;
+            else
+                newUrl = window.location.toString() + "/" + appendSlug;
+
+            window.history.replaceState(document.title, document.title, newUrl);
+        }
+    </script>
+
+    {{#if isAdmin}}
+    <script>
+        function save(mode) {
+            post("/blog/save/" + mode, {
+                id: "#blog-id",
+                title: "#blog-title",
+                body: "#post-body-editor",
+                status: "#post-status",
+                slug: "#blog-slug",
+                featureImage: "#blog-featured-image-url"
+            });
+        }
+    </script>
+    {{/if}}
+
+    {{> footer}}
+
+</body>
+</html>

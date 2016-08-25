@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>blog-xyz</title>
+    {{> metalinks}}
+</head>
+<body>
+    <header id="frontpage-header">
+        <ul id="nav">
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/portfolio">Portfolio</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+        <h1 id="main-title">Hi, this is <strong>blog-xyz</strong>,</h1>
+        <div id="main-subtitle"></div>
+    </header>
+
+    <div class="frontpage-section frontpage-section-posts">
+        <h2 class="frontpage-section-header">Recent posts</h2>
+        <div class="frontpage-section-summary">
+            Check out my <a href="/blog">blog</a>.
+        </div>
+        <ul class="frontpage-posts">
+            {{#each posts}}
+            <li>
+                <div class="frontpage-post-thumbnail" style="background-image: url('{{featureImageUrl}}')"></div>
+                <a href="/blog/{{id}}/{{slug}}"><h3 class="frontpage-post-title">{{title}}</h3></a>
+                <div class="frontpage-post-date">{{relativeDate}}</div>
+                <div class="frontpage-post-summary">{{{summary}}}</div>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+
+    <div class="frontpage-section frontpage-section-works">
+        <h2 class="frontpage-section-header">Latest work</h2>
+        <div class="frontpage-section-summary">
+            Checkout my <a href="/portfolio">portfolio</a> for more!
+        </div>
+
+        <div class="frontpage-works">
+            {{#each projects}}
+            <a class="frontpage-work" href="/portfolio/{{key}}">
+                <div class="frontpage-work-thumbnail" style="background-image: url('{{featureImageUrl}}')"></div>
+                <div class="frontpage-work-title">{{title}}</div>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+
+    {{> footer}}
+    <script src="ui.js"></script>
+</body>
+</html>

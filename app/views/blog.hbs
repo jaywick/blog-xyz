@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Blog | blog-xyz</title>
+    {{> metalinks}}
+</head>
+<body>
+    {{> smallheader}}
+
+    {{#each posts}}
+    <div class="blog-summary-container">
+        <div class="blog-summary">
+            <div class="blog-date">{{humanizedDate}}</div>
+            {{#if ../isAdmin}}
+                <span class="blog-status {{status}}">{{status}}</span>
+            {{/if}}
+            <h2 class="blog-title">{{title}}</h2>
+            <img class="post-feature-image" src="{{{featureImageUrl}}}">
+            <p>{{{truncatedHtml}}}</p>
+            <a class="continue-reading" href="/blog/{{id}}/{{slug}}">Continue reading</a>
+        </div>
+    </div>
+    {{/each}}
+
+    <hr style="width: 800px" />
+
+    <div class="paging">
+        <a class="paging-action" href="{{paging.olderPageUrl}}">&laquo Older posts</a>
+
+        {{#if paging.newerPageUrl}}
+        <a class="paging-action" href="{{paging.newerPageUrl}}">Newer posts &raquo</a>
+        {{/if}}
+    </div>
+
+    {{> footer}}
+</body>
+</html>

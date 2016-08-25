@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Portfolio | blog-xyz</title>
+    {{> metalinks}}
+</head>
+<body>
+    {{> smallheader}}
+
+    <div class="frontpage-section frontpage-section-works">
+        <h2 class="frontpage-section-header">Latest work</h2>
+        <div class="frontpage-section-summary">
+            Check out my projects!
+        </div>
+
+        <div class="frontpage-works">
+            {{#each projects}}
+            <a class="frontpage-work" href="/portfolio/{{key}}">
+                <div class="frontpage-work-thumbnail" style="background-image: url('{{featureImageUrl}}')"></div>
+                <div class="frontpage-work-title">{{title}}</div>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+
+    {{> footer}}
+</body>
+</html>
