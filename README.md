@@ -11,6 +11,12 @@ Get the packages dependancies
 
     npm install 
 
+Globals
+
+    npm install typescript -g
+    npm install es6-promise -g
+    npm install mongodb -g
+
 The build process simply involves transpiling Typescript to JS
 
     tsc -p .
