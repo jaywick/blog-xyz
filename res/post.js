@@ -1,12 +1,29 @@
+function get(path, callback) {
+    var request = new XMLHttpRequest();
+    request.open("GET", path);
+    request.setRequestHeader("Content-Type", "application/json");
 
-function post(path, data) {
+    request.onload = function() {
+        if (request.status !== 200) {
+            alert("Request failed. Returned status of " + request.status);
+            return;
+        } else if (request.readyState === request.DONE) {
+            var data = JSON.parse(request.response);
+            data && callback(data);
+        }
+    };
+    
+    request.send();
+}
+
+function post(path, data, callback) {
     var payload = {};
 
     for (let property in data) {
         var item = data[property].toString();
         var isSelector = startsWith(item, "#") || startsWith(item, ".");
         
-        payload[property] = isSelector ? evaluate(item) : item;
+        payload[property] = isSelector ? peek(item) : item;
     }
 
     var request = new XMLHttpRequest();
@@ -19,14 +36,16 @@ function post(path, data) {
             return;
         } else if (request.readyState === request.DONE) {
             var redirect = JSON.parse(request.response).redirect;
+            
             redirect && (window.location = redirect);
+            callback && callback();
         }
     };
 
     request.send(JSON.stringify(payload));
 }
 
-function evaluate(selector) {
+function peek(selector) {
     var element = document.querySelector(selector);
 
     if (element.tagName === "SELECT")

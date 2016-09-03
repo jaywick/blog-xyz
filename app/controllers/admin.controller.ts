@@ -71,7 +71,7 @@ export default class AdminController extends ControllerBase {
     @view("admin/logs")
     async logs() {
         const logs = await this.store.logs
-            .orderByDesc("time")
+            .orderByDesc("date")
             .toArray<LogModel>()
 
         return new AdminLogsPresenter(logs);

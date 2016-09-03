@@ -79,8 +79,20 @@ export default class App {
             if ((/^\/?about\/?$/i).test(link))
                 return "/about"
 
+            if ((/^\/?projects\/?$/i).test(link))
+                return "/portfolio"
+
+            if ((/^\/?project\/?$/i).test(link))
+                return "/portfolio"
+
             const projectExtract = extract(link, "^/?portfolio/(.+)");
             if (projectExtract) return `/portfolio/${projectExtract[0]}`;
+            
+            const project2Extract = extract(link, "^/?projects/(.+)");
+            if (project2Extract) return `/portfolio/${project2Extract[0]}`;
+            
+            const project3Extract = extract(link, "^/?project/(.+)");
+            if (project3Extract) return `/portfolio/${project3Extract[0]}`;
             
             const postExtract = extract(link, "^/?(\\d+)");
             if (postExtract) return `/blog/${postExtract}`;

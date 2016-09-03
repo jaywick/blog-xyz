@@ -1,6 +1,8 @@
 ﻿import Store from "../store";
 import PostModel from "../models/post.model";
+import CommentModel from "../models/comment.model";
 import PostPresenter from "../presenters/post.presenter";
+import CommentPresenter from "../presenters/comment.presenter";
 import {get, post, view, restricted} from "../router";
 import ControllerBase from "./controller.base";
 import Log from "../utils/log";
@@ -29,17 +31,48 @@ export default class BlogController extends ControllerBase {
             .toArray<PostModel>();
 
         return {
-            posts: posts.map(x => new PostPresenter("read", x)),
+            posts: posts.map(x => new PostPresenter("read", x, null, null, this.remoteIP)),
             isAdmin: this.isAdmin,
             paging: this.getPagingInfo(+page)
         };
+    }
+
+    @get("/blog/tag/:tag")
+    @view("blog-tagged")
+    async tagged(tag) {
+        const posts = await this.store.posts
+            .filter({ status: "publish", tags: tag })
+            .orderByDesc("date")
+            .toArray<PostModel>();
+
+        return {
+            posts: posts.map(x => new PostPresenter("read", x, null, null, this.remoteIP)),
+            isAdmin: this.isAdmin,
+            tag: tag
+        };
+    }
+
+    @get("/blog/comments/:page")
+    async comments(page) {
+        const filter = { postID: +page };
+        
+        if (!this.isAdmin)
+            filter["isModerated"] = true;
+        
+        const comments = await this.store.comments
+            .filter(filter)
+            .orderByDesc("date")
+            .projectAll() // get back _id values
+            .toArray<CommentModel>();
+        
+        return comments.map(x => new CommentPresenter(x, this.isAdmin));
     }
 
     @restricted()
     @get("/blog/add")
     @view("post")
     add() {
-        return new PostPresenter("create", null, null, true);
+        return new PostPresenter("create", null, null, true, this.remoteIP);
     }
 
     @restricted()
@@ -65,6 +98,35 @@ export default class BlogController extends ControllerBase {
         this.response.send({ redirect: `/blog/${newID}` });
     }
 
+    @post("/blog/save/comment")
+    async saveComment(data) {
+        const author = data.author.replace("@", "");
+
+        await this.store.comments
+            .insert({
+                postID: +data.postID,
+                text: data.text,
+                ip: this.remoteIP,
+                author: author,
+                isModerated: false,
+                date: new Date(),
+            });
+        
+        Log.stat(`@${author} wrote a comment on post ${+data.postID}: ${data.text}`, this.remoteIP);
+
+        this.response.send({});
+    }
+
+    @restricted()
+    @post("/blog/save/approve-comment")
+    async approveComment(data) {
+        this.store.comments
+            .filterId(data.id)
+            .update({isModerated: data.state.toLowerCase() === "true"});
+        
+        this.response.send({});
+    }
+
     @restricted()
     @get("/blog/edit/:id")
     @view("post")
@@ -73,7 +135,7 @@ export default class BlogController extends ControllerBase {
             .filter({ id: +id })
             .single<PostModel>();
         
-        return new PostPresenter("update", post, null, this.isAdmin);
+        return new PostPresenter("update", post, null, this.isAdmin, this.remoteIP);
     }
 
     @restricted()
@@ -107,7 +169,7 @@ export default class BlogController extends ControllerBase {
         }
 
         const appendSlug = (slug == null) && post.slug || null;
-        return new PostPresenter("read", post, appendSlug, this.isAdmin);
+        return new PostPresenter("read", post, appendSlug, this.isAdmin, this.remoteIP);
     }
 
     private getPagingInfo(page: number) {

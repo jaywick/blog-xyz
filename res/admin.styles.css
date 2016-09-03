@@ -72,3 +72,45 @@ select#project-status {
     border: none;
     font-family: inherit;
 }
+
+#admin-nav-panel {
+    background: #272727;
+    padding: 8px 0;
+}
+
+#admin-nav {
+    margin: 0;
+    list-style: none;
+}
+
+#admin-nav li {
+    padding: 0;
+    display: inline;
+    padding: 0 4px;
+}
+
+#admin-nav li.group-starter {
+    border-left: 1px solid #656565;
+    padding-left: 10px !important;
+}
+
+#admin-nav li.right-align {
+    float: right;
+    padding-right: 20px; 
+}
+
+#admin-nav li a {
+    color: white;
+    font-size: 13px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+#admin-nav li a:hover {
+    opacity: 1;
+    transition: 1s;
+}
+
+.comment.pending {
+    background-color: #ecbebe;
+}

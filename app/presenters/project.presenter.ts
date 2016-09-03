@@ -17,7 +17,7 @@ export default class ProjectPresenter {
     isDraft: boolean;
     isPublished: boolean;
 
-    constructor(mode: "read" | "update" | "create", data?: ProjectModel, isAdmin?) {
+    constructor(mode: "read" | "update" | "create", data?: ProjectModel, isAdmin?, ip?) {
         this.mode = mode;
         this.isAdmin = !!isAdmin;
 

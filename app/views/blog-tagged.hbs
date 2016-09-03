@@ -11,6 +11,12 @@
 <body>
     {{> smallheader}}
 
+    <div class="filter-description-panel">
+        <div class="filter-description">
+            You are viewing all blog posts tagged <span class="tag-name">{{tag}}</span>
+        </div>
+    </div>
+
     {{#each posts}}
     <div class="blog-summary-container">
         <div class="blog-summary">
@@ -25,16 +31,6 @@
         </div>
     </div>
     {{/each}}
-
-    <hr style="width: 800px" />
-
-    <div class="paging">
-        <a class="paging-action" href="{{paging.olderPageUrl}}">&laquo Older posts</a>
-
-        {{#if paging.newerPageUrl}}
-        <a class="paging-action" href="{{paging.newerPageUrl}}">Newer posts &raquo</a>
-        {{/if}}
-    </div>
 
     {{> footer}}
 </body>

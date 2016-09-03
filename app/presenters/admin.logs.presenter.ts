@@ -6,7 +6,7 @@ export default class AdminLogsPresenter {
 
     constructor(logs: LogModel[]) {
         this.logs = logs.map(x => {
-            x["localTime"] = moment(x.time).format("YYYY/MM/DD HH:mm:DD")
+            x["localTime"] = moment(x.date).format("YYYY/MM/DD HH:mm:DD")
             return x;
         });
     }

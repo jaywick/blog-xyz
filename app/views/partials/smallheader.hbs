@@ -1,8 +1,31 @@
 <header id="smaller-header">
-    <h1 id="smaller-title"><a href="/">blog-xyz</a></h1>
+    <h1 id="smaller-title"><a href="/">Jay Wick</a></h1>
+    <div id="nav-toggler"><a href="javascript:toggleNavMenu()"><span class="fa fa-bars"></span></a></div>
     <ul id="nav">
         <li><a href="/blog">Blog</a></li>
         <li><a href="/portfolio">Portfolio</a></li>
         <li><a href="/about">About</a></li>
     </ul>
+    <ul id="nav-menu" style="display: none;">
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/portfolio">Portfolio</a></li>
+        <li><a href="/about">About</a></li>
+    </ul>
+
+    <script>
+        function toggleNavMenu() {
+            var navMenu = document.querySelector("#nav-menu");
+            var navTogglerIcon = document.querySelector("#nav-toggler > a > span");
+
+            if (navMenu.style.display === "none") {
+                // open
+                navMenu.style.display = "block";
+                navTogglerIcon.className = "fa fa-times";
+            } else {
+                // close
+                navMenu.style.display = "none";
+                navTogglerIcon.className = "fa fa-bars";
+            }
+        }
+    </script>
 </header>

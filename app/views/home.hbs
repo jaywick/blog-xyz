@@ -4,9 +4,28 @@
 <head>
     <title>blog-xyz</title>
     {{> metalinks}}
+    {{#if isAdmin}}
+    <link rel="stylesheet" href="/admin.styles.css" type="text/css" />
+    {{/if}}
+    <meta name="Description" content="blog-xyz by Jay Wick">
+    <meta name="keywords" content="blog,portfolio,profile,projects,about me,home page">
+    <meta name="author" content="your name here!">
 </head>
 <body>
     <header id="frontpage-header">
+        {{#if isAdmin}}
+        <div id="admin-nav-panel">
+            <ul id="admin-nav">
+                <li><a href="/blog/add" title="Create new post">+</a></li>
+                <li><a href="/admin/blog" title="List all posts">Posts</a></li>
+                <li class="group-starter" title="Create new project"><a href="/portfolio/add">+</a></li>
+                <li><a href="/admin/portfolio" title="List all projects">Projects</a></li>
+                <li class="group-starter" title="List all logs"><a href="/admin/logs">Logs</a></li>
+                <li class="right-align" title="Log out of Admin mode"><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+        {{/if}}
+        <div id="nav-toggler"><a href="javascript:toggleNavMenu()"><span class="fa fa-bars"></span></a></div>
         <ul id="nav">
             <li><a href="/blog">Blog</a></li>
             <li><a href="/portfolio">Portfolio</a></li>
@@ -14,6 +33,12 @@
         </ul>
         <h1 id="main-title">Hi, this is <strong>blog-xyz</strong>,</h1>
         <div id="main-subtitle"></div>
+        <ul id="nav-menu" class="home-menu" style="display: none;">
+            <li class="home-menu-close"><a href="javascript:toggleNavMenu()"><span class="fa fa-times"></span></a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/portfolio">Portfolio</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
     </header>
 
     <div class="frontpage-section frontpage-section-posts">
@@ -51,5 +76,21 @@
 
     {{> footer}}
     <script src="ui.js"></script>
+    <script>
+        function toggleNavMenu() {
+            var navMenu = document.querySelector("#nav-menu");
+            var navTogglerIcon = document.querySelector("#nav-toggler > a > span");
+
+            if (navMenu.style.display === "none") {
+                // open
+                navMenu.style.display = "block";
+                navTogglerIcon.className = "";
+            } else {
+                // close
+                navMenu.style.display = "none";
+                navTogglerIcon.className = "fa fa-bars";
+            }
+        }
+    </script>
 </body>
 </html>

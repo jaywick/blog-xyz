@@ -11,7 +11,7 @@ export default class Log {
         Log.store = new Store();
     }
 
-    static write(message: string, ip?, severity?: "log" | "warn" | "fail") {
+    static write(message: string, ip?, severity?: "log" | "warn" | "fail" | "stat") {
         if (!Log.store)
         {
             console.error(`Failed to log error. ${message}`);
@@ -21,7 +21,7 @@ export default class Log {
         const entry = new LogModel();
         entry.message = message;
         entry.severity = severity || "log";
-        entry.time = Date().toString();
+        entry.date = new Date();
         entry.ip = ip;
         Log.store.logs.insert(entry);
     }
@@ -32,5 +32,9 @@ export default class Log {
 
     static fail(message: string, ip?) {
         Log.write(message, ip, "log");
+    }
+
+    static stat(message: string, ip) {
+        Log.write(message, ip, "stat");
     }
 }

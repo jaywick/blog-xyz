@@ -1,4 +1,5 @@
 ﻿import PostModel from "../models/post.model";
+import NameGenerator from "../utils/name.generator";
 const moment = require("moment");
 const markdown = require("marked");
 
@@ -24,8 +25,9 @@ export default class PostPresenter {
     isDraft: boolean;
     isPublished: boolean;
     relativeDate: string;
+    commentAuthor: string;
 
-    constructor(mode: "create" | "update" | "read", model?: PostModel, private appendSlug?: string, isAdmin?: boolean) {
+    constructor(mode: "create" | "update" | "read", model?: PostModel, private appendSlug?: string, isAdmin?: boolean, ip?: string) {
         this.mode = mode;
         this.isAdmin = !!isAdmin;
 
@@ -60,6 +62,7 @@ export default class PostPresenter {
         this.isDraft = model.status === "draft";
         this.isPublished = model.status === "publish";
         this.relativeDate = this.getRelativeDate();
+        this.commentAuthor = "@" + NameGenerator.fromIP(ip);
     }
 
     private getBodyHtml() {

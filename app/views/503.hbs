@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Closed for maintenance | blog-xyz</title>
+    {{> metalinks}}
+</head>
+<body>
+    <div class="error-page">
+        <h1><span class="fa fa-wrench"></span> Closed for maintenance</h1>
+        <p>
+            Even machines need a little down time.
+        </p>
+        <p>
+            Please try again in a few minutes, we should be back online shortly.
+        </p>
+    </div>
+</body>
+</html>
+
+{{#if isAdmin}}
+    <h4>Server Error 503</h4>
+    <pre><code>{{message}}
+
+    {{stack}}</code>
+    </pre>
+{{/if}}

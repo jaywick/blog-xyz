@@ -3,6 +3,7 @@ import * as mongodb from "mongodb";
 import AdminModel from "./models/admin.model";
 import PostModel from "./models/post.model";
 import ProjectModel from "./models/project.model";
+import CommentModel from "./models/comment.model";
 import LogModel from "./models/log.model";
 import Log from "./utils/log";
 
@@ -26,6 +27,10 @@ export default class Store {
         return this.query(ProjectModel.collection);
     }
 
+    public get comments() {
+        return this.query(CommentModel.collection);
+    }
+
     public get admin() {
         return this.query(AdminModel.collection)
     }
@@ -45,12 +50,24 @@ export class StoreQuery {
     constructor(private client, private url: string, private collection: string) {
     }
 
+    filterId(id: string): StoreQuery {
+        this.condition = { _id: new mongodb.ObjectID(id) };
+
+        return this;
+    }
+
     filter(condition: {}): StoreQuery {
+        if (condition["_id"] != null)
+            throw new Error("Cannot have filter() with _id. Use filterId instead");
+
         this.condition = condition;
         return this;
     }
 
     filterEq(field: string, value: any): StoreQuery {
+        if (field === "_id")
+            throw new Error("Cannot have filterEq() with field _id. Use filterId instead");
+
         this.condition = {};
         this.condition[field] = value;
         return this;
@@ -83,6 +100,11 @@ export class StoreQuery {
 
     project(fields: string[]): StoreQuery {
         fields.forEach(x => this.projection[x] = true);
+        return this;
+    }
+
+    projectAll(): StoreQuery {
+        this.projection = {};
         return this;
     }
 

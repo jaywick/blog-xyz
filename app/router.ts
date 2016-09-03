@@ -46,16 +46,29 @@ export default class Router {
             if (isRestricted && request.session.isAdmin !== true) {
                 response.redirect(`/login?redirect=${encodeURIComponent(request.url)}`);
             } else {
+                Log.stat("GET " + request.originalUrl + " with args " + JSON.stringify(request.params), request.ip);
+
                 if (controller) {
                     controller.response = response;
                     controller.request = request;
                 }
-                
+
                 Promise.resolve((method == null) ? () => { } : method.call(this, ...args))
                     .then((result) => {
+                        if (view == null) {
+                            // return JSON
+                            response.json(result);
+                            return;
+                        }
+
                         response.render(view, result);
                     })
                     .catch(ex => {
+                        if (ex.message.indexOf("Cannot connect to database! connect ECONNREFUSED") > -1) {
+                            this.respond503(controller, ex);
+                            return;
+                        }
+
                         this.respond500(controller, ex);
                     });
             }
@@ -71,6 +84,8 @@ export default class Router {
             if (isRestricted && request.session.isAdmin !== true) {
                 response.status(404).render("404");
             } else {
+                Log.stat("POST " + request.originalUrl, request.ip);
+
                 if (controller) {
                     controller.response = response;
                     controller.request = request;
@@ -88,21 +103,36 @@ export default class Router {
 
     redirect(path: string, destination: (string) => string) {
         this.app.get(path, (request, response) => {
-            response.redirect(destination(request.query));
+            const destinationValue = destination(request.query);
+            Log.stat("Redirecting " + request.originalUrl + " to " + destinationValue, request.ip);
+            response.redirect(destinationValue);
         });
 
         return this;
     }
 
     catchAll() {
-        this.app.get("*", (request, response) => response.status("404").render("404"));
+        this.app.get("*", (request, response) => {
+            Log.stat("404 not found for " + request.originalUrl, request.ip);
+            response.status("404").render("404");
+        });
     }
 
     private respond500(controller: ControllerBase, ex) {
-        Log.fail(`500 Internal Server Error for GET ${controller.request.query}. Error = ${JSON.stringify(ex)}`, controller.remoteIP);
+        Log.stat(`500 Internal Server Error for GET ${controller.request.query}. Error = ${JSON.stringify(ex)}`, controller.remoteIP);
         controller.response
             .status(500)
             .render("500", {
+                isAdmin: controller.isAdmin,
+                message: ex.message,
+                stack: ex.stack
+            });
+    }
+    
+    private respond503(controller: ControllerBase, ex) {
+        controller.response
+            .status(503)
+            .render("503", {
                 isAdmin: controller.isAdmin,
                 message: ex.message,
                 stack: ex.stack
