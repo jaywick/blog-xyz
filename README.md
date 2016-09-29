@@ -3,19 +3,24 @@ Public fork of my http://jaywick.xyz site
 
 # Prerequisites
 * mongodb
-* Typescript 1.8+
-* Node 5+
-* vscode (optional, but seriously recommended)
+* Node 5.7.0+
+* vscode for development (optional, but seriously recommended)
+
+Install global packages
+
+    npm install typescript@1.8.10 -g
+    npm install es6-promise -g
+    npm install mongodb -g
+    npm install typings -g
+    npm install forever -g
 
 Get the packages dependancies
 
     npm install 
 
-Globals
+Get typings
 
-    npm install typescript -g
-    npm install es6-promise -g
-    npm install mongodb -g
+    typings install
 
 The build process simply involves transpiling Typescript to JS
 
@@ -23,9 +28,13 @@ The build process simply involves transpiling Typescript to JS
 
 With `mongod` running, run
 
-    node entry.js
+    forever start entry.js
 
-Or in vscode simply click <kbd>F5</kbd> to debug using Node.
+Or to debug vscode simply click <kbd>F5</kbd> to launch Node and attach to process.
+
+Stop the forever script using
+
+    forever stop entry.js
 
 # License
 
