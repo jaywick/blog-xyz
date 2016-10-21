@@ -1,5 +1,5 @@
 ﻿import ProjectModel from "../models/project.model";
-const markdown = require("marked");
+import Markdown from "../utils/markdown";
 
 export default class ProjectPresenter {
     mode: "read" | "update" | "create";
@@ -48,6 +48,6 @@ export default class ProjectPresenter {
     }
 
     getBodyHtml() {
-        return markdown(this.body);
+        return Markdown.parse(this.body);
     }
 }

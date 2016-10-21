@@ -6,6 +6,7 @@ import CommentPresenter from "../presenters/comment.presenter";
 import {get, post, view, restricted} from "../router";
 import ControllerBase from "./controller.base";
 import Log from "../utils/log";
+import Attachments from "../utils/attachments";
 
 export default class BlogController extends ControllerBase {
     static PAGE_LIMIT = 8;
@@ -21,7 +22,7 @@ export default class BlogController extends ControllerBase {
     }
 
     @get("/blog/page/:page")
-    @view("blog")
+    @view("blog/index")
     async page(page) {
         const posts = await this.store.posts
             .filter({ status: "publish" })
@@ -29,6 +30,8 @@ export default class BlogController extends ControllerBase {
             .take(BlogController.PAGE_LIMIT)
             .skip(+page * BlogController.PAGE_LIMIT)
             .toArray<PostModel>();
+
+        await this.resolveCommentCountIn(posts);
 
         return {
             posts: posts.map(x => new PostPresenter("read", x, null, null, this.remoteIP)),
@@ -38,12 +41,14 @@ export default class BlogController extends ControllerBase {
     }
 
     @get("/blog/tag/:tag")
-    @view("blog-tagged")
+    @view("blog/tagged")
     async tagged(tag) {
         const posts = await this.store.posts
             .filter({ status: "publish", tags: tag })
             .orderByDesc("date")
             .toArray<PostModel>();
+
+        await this.resolveCommentCountIn(posts);
 
         return {
             posts: posts.map(x => new PostPresenter("read", x, null, null, this.remoteIP)),
@@ -70,7 +75,7 @@ export default class BlogController extends ControllerBase {
 
     @restricted()
     @get("/blog/add")
-    @view("post")
+    @view("blog/edit")
     add() {
         return new PostPresenter("create", null, null, true, this.remoteIP);
     }
@@ -81,14 +86,16 @@ export default class BlogController extends ControllerBase {
         const newID = await this.store.posts
             .autoincrement("id");
         
+        const updatedBody = this.processImages(newID, data);
+
         await this.store.posts
             .insert({
                 id: newID,
                 title: data.title,
-                body: data.body,
+                body: updatedBody,
                 status: data.status,
                 slug: data.slug || data.title.toLower().replace(" ", "-"),
-                date: Date,
+                date: data.status === "publish" && new Date(),
                 tags: [],
                 featureImage: data.featureImage,
                 originalUrl: ""
@@ -96,6 +103,20 @@ export default class BlogController extends ControllerBase {
         
         Log.write(`Created post with ID ${newID}`, this.remoteIP);
         this.response.send({ redirect: `/blog/${newID}` });
+    }
+
+    private processImages(id, data): string {
+        let updatedBody = data.body;
+        const imageList: { filename: string, serverPath: string }[] = JSON.parse(data.imageList || "[]");
+
+        if (imageList.length > 0) {
+            imageList.forEach(x => {
+                Attachments.move(id.toString(), x);
+                updatedBody = updatedBody.replace(`](${x.serverPath})`, `](/media/${id.toString()}/${x.filename})`);
+            });
+        }
+
+        return updatedBody;
     }
 
     @post("/blog/save/comment")
@@ -129,7 +150,7 @@ export default class BlogController extends ControllerBase {
 
     @restricted()
     @get("/blog/edit/:id")
-    @view("post")
+    @view("blog/edit")
     async edit(id) {
         const post = await this.store.posts
             .filter({ id: +id })
@@ -141,31 +162,41 @@ export default class BlogController extends ControllerBase {
     @restricted()
     @post("/blog/save/edit")
     async saveEdit(data) {
+        const date = await this.store.posts
+            .filter({ id: +data.id })
+            .project(["date"])
+            .scalar<Date>();
+
+        const updatedBody = this.processImages(+data.id, data);
+
         await this.store.posts
             .filter({ id: +data.id })
             .update({
                 title: data.title,
-                body: data.body,
+                body: updatedBody,
                 status: data.status,
                 slug: data.slug,
+                date: date || new Date(),
                 featureImage: data.featureImage
             });
-        
+
         Log.write(`Updated post where ID = ${+data.id}`, this.remoteIP);
         this.response.send({ redirect: `/blog/${+data.id}` });
     }
 
     @get("/blog/:id/:slug?")
-    @view("post")
+    @view("blog/item")
     async item(id, slug?) {
         const post = await this.store.posts
             .filter({ id: +id })
             .single<PostModel>();
-        
-        if (post.status !== "publish")
+
+        await this.resolveCommentCountIn([post]);
+
+        if (post.status === "draft" && !this.isAdmin)
         {
             this.response.redirect("/blog");
-            return; //todo: handle redirection via a return as with true ASP.NET MVC
+            return {};
         }
 
         const appendSlug = (slug == null) && post.slug || null;
@@ -186,5 +217,20 @@ export default class BlogController extends ControllerBase {
             olderPageUrl: olderPageUrl,
             newerPageUrl: newerPageUrl
         }
+    }
+
+    private async resolveCommentCountIn(posts: PostModel[]) {
+        const postIDs = posts
+            .map(x => x.id);
+
+        const comments = await this.store.comments
+            .filterIn("postID", postIDs)
+            .filter({ isModerated: true })
+            .project(["postID"])
+            .toArray<{ postID }>();
+
+        posts.map(post => {
+            post["commentCount"] = comments.filter(x => x.postID === post.id).length;
+        });
     }
 }

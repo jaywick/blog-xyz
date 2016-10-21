@@ -7,9 +7,9 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
     },
-    "files": [
-        "typings/index.d.ts",
-        "app/extensions.ts",
-        "entry.ts"
+    "include": [
+        "../typings/index.d.ts",
+        "../app/extensions.ts",
+        "./**/*.spec.ts"
     ]
 }

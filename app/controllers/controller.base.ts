@@ -1,4 +1,5 @@
 import Store from "../store";
+import QueryOtions from "../utils/query.options";
 
 abstract class ControllerBase {
     public request;
@@ -16,7 +17,11 @@ abstract class ControllerBase {
 
     get remoteIP(): string {
         return this.request && (this.request.headers["x-forwarded-for"] || this.request.connection.remoteAddress);
-    } 
+    }
+
+    get options(): QueryOtions {
+        return new QueryOtions(this.request);
+    }
 }
 
 export default ControllerBase;

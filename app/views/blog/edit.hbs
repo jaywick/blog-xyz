@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>{{title}} | blog-xyz</title>
+    {{> metalinks}}
+    {{#if isAdmin}}
+    <link rel="stylesheet" href="/admin.styles.css" type="text/css" />
+    <script src="/marked.min.js" />
+    {{/if}}
+</head>
+<body>
+    {{> smallheader}}
+
+    <div class="blog-post">
+        <input id="blog-title" class="editing" name="title" placeholder="post title" value="{{title}}" onkeyup="javascript:updateSlug()"></h2>
+        <input type="text" id="blog-slug" value="{{slug}}" placeholder="slug"/>
+
+        {{#if featureImageUrl}}
+            <img class="post-feature-image editing" title="Click to change feature image" src="{{{featureImageUrl}}}" onclick="javascript:setFeatureImage()">
+        {{else}}
+            <img class="post-feature-image editing" title="Click to change feature image" src="/insert-image.png" onclick="javascript:setFeatureImage()">
+        {{/if}}
+
+        <div class="tabs">
+            <div class="tab-headers">
+                <div class="tab-header tab-header-edit selected" onclick="javascript:tab('edit')">edit</div>
+                <div class="tab-header tab-header-preview" onclick="javascript:tab('preview')">preview</div>
+            </div>
+
+            <div class="tab tab-edit">
+                <div class="editor-toolbar">
+                    <a class="toolbar-action fa fa-anchor" href="javascript:insertBreak()" title="Insert post break"></a>
+                    <a class="toolbar-action fa fa-picture-o" href="javascript:insertImage()" title="Insert image"></a>
+                </div>
+                <textarea id="post-body-editor" name="body">{{body}}</textarea>
+            </div>
+            <div class="tab tab-preview">
+                <div id="editor-preview"></div>
+            </div>
+        </div>
+
+        <input id="blog-id" type="hidden" value="{{id}}"/>
+        <input id="blog-featured-image-url" type="hidden" value="{{featureImage}}" placeholder="featured image"/>
+        <input id="image-links" type="hidden" value="[]"/>
+
+        {{#switch mode}}
+            {{#case "create"}}
+                <a class="admin-action save-post" href="javascript:save('add', 'publish')">Publish</a>
+                <a class="admin-action save-draft" href="javascript:save('add', 'draft')">Save Draft</a>
+            {{/case}}
+            {{#case "update"}}
+                <a class="admin-action save-post" href="javascript:save('edit', 'publish')">Update</a>
+                <a class="admin-action save-draft" href="javascript:save('edit', 'draft')">Save Draft</a>
+            {{/case}}
+        {{/switch}}
+    </div>
+
+    <script src="/post.js"></script>
+    <script src="/imgr.js"></script>
+    <script src="/marked.min.js"></script>
+    <script>
+        function tab(key) {
+            var otherKey = key === "edit" ? "preview" : "edit";
+
+            var header = document.querySelector(".tab-header-" + key);
+            var content = document.querySelector(".tab-" + key);
+            var otherHeader = document.querySelector(".tab-header-" + otherKey);
+            var otherContent = document.querySelector(".tab-" + otherKey);
+
+            if (header.classList.contains("selected"))
+                return; // already selected
+            
+            header.classList.toggle("selected");
+            otherHeader.classList.toggle("selected");
+            
+            content.style.display = "block";
+            otherContent.style.display = "none";
+
+            if (key === "preview")
+                preview();
+        }
+
+        function preview() {
+            var text = document.querySelector("#post-body-editor").value;
+            var preview = document.querySelector("#editor-preview");
+            preview.innerHTML = '<div class="loading-preview">Loading...</div>';
+            preview.innerHTML = marked(text);
+        }
+
+        function updateSlug() {
+            var title = document.querySelector("#blog-title").value;
+            var slug = document.querySelector("#blog-slug").value;
+
+            var newSlug = title
+                .toLowerCase()
+                .replace(/ /g, "-")
+                .replace(/[^a-zA-Z0-9- ]/g, "");
+            
+            document.querySelector("#blog-slug").value = newSlug;
+        }
+
+        function setFeatureImage() {
+            var onFeatureImageUploaded = function(filename, tempServerPath) {
+                mapImage(filename, tempServerPath);
+
+                document.querySelector("#blog-featured-image-url").value = filename; 
+                document.querySelector(".post-feature-image").src = tempServerPath;
+            };
+
+            promptFile(onFeatureImageUploaded);
+        }
+
+        function editorInsert(text, selectionStart, selectionLength) {
+            var editor = document.querySelector("#post-body-editor");
+            var originalCursorPosition = editor.selectionStart;
+
+            editor.value = editor.value.substring(0, editor.selectionStart) + text + editor.value.substring(editor.selectionEnd);
+            
+            editor.selectionStart = originalCursorPosition + selectionStart; // place cursor inside after \n![
+            editor.selectionEnd = editor.selectionStart + selectionLength; // select description text
+
+            editor.focus();
+        }
+
+        function insertBreak() {
+            var breakSyntax = "****";
+            editorInsert(breakSyntax, 0, breakSyntax.length);
+        }
+
+        function insertImage() {
+            var onUploaded = function(filename, tempServerPath) {
+                mapImage(filename, tempServerPath);
+
+                editorInsert(`\n![description](${tempServerPath})\n`, "\n![".length, "description".length);
+            };
+
+            promptFile(onUploaded);
+        }
+
+        function mapImage(filename, tempServerPath) {
+            var imageLinks = JSON.parse(document.querySelector("#image-links").value || "[]");
+            imageLinks.push({filename: filename, serverPath: tempServerPath});
+            document.querySelector("#image-links").value = JSON.stringify(imageLinks);
+        }
+
+        function save(mode, status) {
+            post("/blog/save/" + mode, {
+                id: "#blog-id",
+                title: "#blog-title",
+                body: "#post-body-editor",
+                status: status,
+                slug: "#blog-slug",
+                imageList: "#image-links",
+                featureImage: "#blog-featured-image-url"
+            });
+        }
+    </script>
+
+    {{> footer}}
+
+</body>
+</html>

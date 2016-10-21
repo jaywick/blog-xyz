@@ -1,5 +1,6 @@
 import CommentModel from "../models/comment.model";
-const moment = require("moment");
+import * as moment from "moment";
+import * as markdown from "marked";
 
 export default class CommentPresenter {
     _id;
@@ -15,7 +16,7 @@ export default class CommentPresenter {
         this._id = model._id;
         this.date = model.date;
         this.author = model.author;
-        this.text = model.text;
+        this.text = markdown(model.text);
         this.cssClass = !model.isModerated && "pending";
         
         this.relativeDate = moment(this.date).fromNow();

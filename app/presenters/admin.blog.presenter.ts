@@ -1,6 +1,6 @@
 import PostPresenter from "./post.presenter";
 import PostModel from "../models/post.model";
-const moment = require("moment");
+import * as moment from "moment";
 
 class AdminBlogPostPresenter {
     id; slug; title; date; status; notCompliant; isDraft; isPublished;

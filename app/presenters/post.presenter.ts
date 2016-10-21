@@ -1,7 +1,7 @@
 ﻿import PostModel from "../models/post.model";
 import NameGenerator from "../utils/name.generator";
-const moment = require("moment");
-const markdown = require("marked");
+import * as moment from "moment";
+import Markdown from "../utils/markdown";
 
 export default class PostPresenter {
     static SUMMARY_CHAR_LIMIT = 350;
@@ -26,6 +26,8 @@ export default class PostPresenter {
     isPublished: boolean;
     relativeDate: string;
     commentAuthor: string;
+    readTime: number;
+    commentCount: number;
 
     constructor(mode: "create" | "update" | "read", model?: PostModel, private appendSlug?: string, isAdmin?: boolean, ip?: string) {
         this.mode = mode;
@@ -63,45 +65,40 @@ export default class PostPresenter {
         this.isPublished = model.status === "publish";
         this.relativeDate = this.getRelativeDate();
         this.commentAuthor = "@" + NameGenerator.fromIP(ip);
+        this.readTime = this.getReadTime();
+        this.commentCount = model["commentCount"];
     }
 
     private getBodyHtml() {
-        return markdown(this.body.replace(/^\*\*\*\*$/gim, "\n"));
+        return Markdown.parse(this.body);
     }
 
     private getTruncatedHtml() {
-        const breakPosition = this.body.indexOf("****");
-
-        if (breakPosition === -1)
-            return this.bodyHtml;
-
-        const truncated = this.body.substring(0, breakPosition);
-        return markdown(truncated);
+        return Markdown.summarise(this.body);
     }
 
     private getSummary() {
-        const flatText = this.body
-            .split("\n")
-            .filter(x => x.indexOf("#") !== 0)    // filter out headings
-            .filter(x => x.indexOf("-") !== 0)    // filter list items
-            .filter(x => x.indexOf("    ") !== 0) // filter out code
-            .filter(x => x.indexOf("```") !== 0)  // filter out code
-            .filter(x => x.indexOf("- ") !== 0)   // filter out code
-            .slice(0, 3).join(" ")                // merge first 3 paragraphs as sentences
-            .split(". ").slice(0, 4).join(". ")   // get first 4 sentences
-            .replace(/\[(.+?)\]\(.+?\)/gi, "$1")  // swap linked text with text
-            .replace(/\!\[(.+?)\]\(.+?\)/gi, "")  // remove image syntax
-            .replace(/`(.+?)`/gi, "<i>$1</i>");   // swap code with italics
-
-        return flatText;
+        return Markdown.snippet(this.body);
     }
 
     private getHumanizedDate() {
+        if (this.date == null) return null;
         return moment(this.date).format("MMMM D, YYYY");
     }
 
     private getRelativeDate() {
+        if (this.date == null) return null;
         const date = moment(this.date);
         return date.format("MMM D, YYYY");
+    }
+
+    private getReadTime() {
+        // based on https://blog.medium.com/read-time-and-you-bc2048ab620c#.vrd4kbc3f
+        const readSpeed = 250; // wpm
+        const imageSpeed = 5 / 60; // 5s per image
+        const words = (this.body.match(/\S+/g) || []).length;
+        const images = (this.body.match(/\!\[.+?\]\(.+?\)/g) || []).length;
+
+        return Math.ceil(words / readSpeed + images * imageSpeed);
     }
 }

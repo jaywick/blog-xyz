@@ -53,7 +53,7 @@ export default class LoginController extends ControllerBase {
             // save last logged in date
             await this.store.admin
                 .filter({ user: admin.user })
-                .update({ lastLoggedIn: Date() });
+                .update({ lastLoggedIn: new Date() });
 
             this.response.send({ redirect: data.redirect || "/" });
         } catch (err) {

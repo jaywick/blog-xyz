@@ -4,9 +4,6 @@
 <head>
     <title>Blog | blog-xyz</title>
     {{> metalinks}}
-    <meta name="Description" content="blog-xyz by Jay Wick">
-    <meta name="keywords" content="blog">
-    <meta name="author" content="your name here!">
 </head>
 <body>
     {{> smallheader}}
@@ -14,7 +11,15 @@
     {{#each posts}}
     <div class="blog-summary-container">
         <div class="blog-summary">
-            <div class="blog-date">{{humanizedDate}}</div>
+            <div class="blog-meta-top">
+                <span class="blog-date">{{humanizedDate}}</span>
+                <span class="blog-meta-separator">&bull;</span>
+                <span class="blog-minutes">{{readTime}} min read</span>
+                {{#any commentCount}}
+                    <span class="blog-meta-separator">&bull;</span>
+                    <span class="blog-comments">{{commentCount}} response{{#plural commentCount}}{{/plural}}</span>
+                {{/any}}
+            </div>
             {{#if ../isAdmin}}
                 <span class="blog-status {{status}}">{{status}}</span>
             {{/if}}

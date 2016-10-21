@@ -11,58 +11,34 @@
 <body>
     {{> smallheader}}
 
-    {{#switch mode}}
-        {{#case "read"}}
-        <div class="blog-post">
-            <div class="blog-date">{{humanizedDate}}</div>
-            {{#if isAdmin}}
-                <span class="blog-status {{status}}">{{status}}</span>
-            {{/if}}
-            <h1 class="blog-title">{{title}} {{#if isAdmin}}<a class="admin-action edit-post fa fa-pencil" href="/blog/edit/{{id}}"></a>{{/if}}</h1>
-            <img class="post-feature-image" src="{{{featureImageUrl}}}">
-            <p>{{{bodyHtml}}}</p>
-
-            Tagged under: {{#each tags}}<a href="/blog/tag/{{this}}" class="post-tag">{{this}}</a>{{/each}}
+    <div class="blog-post">
+        <div class="blog-meta-top">
+            <span class="blog-date">{{humanizedDate}}</span>
+            <span class="blog-meta-separator">&bull;</span>
+            <span class="blog-minutes">{{readTime}} min read</span>
+            {{#any commentCount}}
+                <span class="blog-meta-separator">&bull;</span>
+                <span class="blog-comments">{{commentCount}} response{{#plural commentCount}}{{/plural}}</span>
+            {{/any}}
         </div>
-        
-        <div class="blog-comments-section">
-            <div class="blog-comments">
-                <h1>Responses</h1>
-                <div class="comments-container">
-                    <span class="loading-comments-text"><i class="fa fa-spinner" style=""></i> Loading comments...</span>
-                </div>
+        {{#if isAdmin}}
+            <span class="blog-status {{status}}">{{status}}</span>
+        {{/if}}
+        <h1 class="blog-title">{{title}} {{#if isAdmin}}<a class="admin-action edit-post fa fa-pencil" href="/blog/edit/{{id}}"></a>{{/if}}</h1>
+        <img class="post-feature-image" src="{{{featureImageUrl}}}">
+        <p>{{{bodyHtml}}}</p>
+
+        Tagged under: {{#each tags}}<a href="/blog/tag/{{this}}" class="post-tag">{{this}}</a>{{/each}}
+    </div>
+    
+    <div class="blog-comments-section">
+        <div class="blog-comments">
+            <h1>Responses</h1>
+            <div class="comments-container">
+                <span class="loading-comments-text"><i class="fa fa-spinner" style=""></i> Loading comments...</span>
             </div>
         </div>
-        {{/case}}
-        
-        {{#case "update" "create"}}
-            {{#if isAdmin}}
-            <div class="blog-post">
-                <div class="blog-meta">
-                    <select id="post-status">
-                        <option value="draft" {{#if isDraft}}selected="selected"{{/if}}>Draft</option>
-                        <option value="publish" {{#if isPublished}}selected="selected"{{/if}}>Published</option>
-                    </select>
-                    <input type="text" id="blog-slug" value="{{slug}}" placeholder="slug"/>
-                    <input type="text" id="blog-featured-image-url" value="{{featureImage}}" placeholder="featured image"/>
-                </div>
-
-                <h2 contenteditable id="blog-title">{{title}}</h2>
-                <textarea id="post-body-editor">{{body}}</textarea>
-                <input id="blog-id" type="hidden" value="{{id}}"/>
-
-                {{#switch mode}}
-                    {{#case "create"}}
-                        <a class="admin-action save-post" href="javascript:save('add')">Create post</a>
-                    {{/case}}
-                    {{#case "update"}}
-                        <a class="admin-action save-post" href="javascript:save('edit')">Save post</a>
-                    {{/case}}
-                {{/switch}}
-            </div>
-            {{/if}}
-        {{/case}}
-    {{/switch}}
+    </div>
 
     <script src="/post.js"></script>
     <script>
@@ -138,17 +114,6 @@
     <script>
         function approveComment(id, value) {
             post("/blog/save/approve-comment/", { id: id, state: value }, loadComments);
-        }
-
-        function save(mode) {
-            post("/blog/save/" + mode, {
-                id: "#blog-id",
-                title: "#blog-title",
-                body: "#post-body-editor",
-                status: "#post-status",
-                slug: "#blog-slug",
-                featureImage: "#blog-featured-image-url"
-            });
         }
     </script>
     {{/if}}

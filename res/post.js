@@ -48,6 +48,9 @@ function post(path, data, callback) {
 function peek(selector) {
     var element = document.querySelector(selector);
 
+    if (element.tagName === "INPUT" && element.type.toLowerCase() === "checkbox")
+        return element.checked;
+
     if (element.tagName === "SELECT")
         return element.options[element.selectedIndex].value;
     else

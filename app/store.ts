@@ -51,8 +51,12 @@ export class StoreQuery {
     }
 
     filterId(id: string): StoreQuery {
-        this.condition = { _id: new mongodb.ObjectID(id) };
+        this.condition["_id"] = new mongodb.ObjectID(id);
+        return this;
+    }
 
+    filterIn(field: string, values: any[]): StoreQuery {
+        this.condition[field] = { "$in": values };
         return this;
     }
 
@@ -68,17 +72,51 @@ export class StoreQuery {
         if (field === "_id")
             throw new Error("Cannot have filterEq() with field _id. Use filterId instead");
 
-        this.condition = {};
         this.condition[field] = value;
         return this;
     }
 
-    orderBy(field: string, isDescending?: boolean): StoreQuery {
-        if (isDescending)
-            return this.orderByDesc(field);
+    filterOp(field: string, operation: "<" | ">" | ">=" | "<=" | "<>", value: any) {
+        let opName;
+
+        switch (operation) {
+            case "<":
+                opName = "$lt"
+                break;
+            case "<=":
+                opName = "$lte"
+                break;
+            case ">":
+                opName = "$gt"
+                break;
+            case ">=":
+                opName = "$gte"
+                break;
+            case "<>":
+                opName = "not"
+                break;
+            default:
+                throw new Error(`Invalid input to StoreQuery.filterOp. ${operation} is an invalid operation.`);
+        }
+
+        const predicate = {};
+        predicate[opName] = value;
+
+        this.condition[field] = predicate;
+        return this;
+    }
+
+    orderBy(options: {field: string, isDescending?: boolean}): StoreQuery {
+        if (options.field == null) {
+            this.ordering = {};
+            return this;
+        }
+
+        if (options.isDescending)
+            return this.orderByDesc(options.field);
 
         this.ordering = {};
-        this.ordering[field] = 1;
+        this.ordering[options.field] = 1;
         return this;
     }
 
@@ -96,6 +134,12 @@ export class StoreQuery {
     skip(count: number): StoreQuery {
         this.skipCount = count;
         return this;
+    }
+
+    page(index: number, itemsPerPage: number) {
+        return this
+            .skip(index * itemsPerPage)
+            .take(itemsPerPage);
     }
 
     project(fields: string[]): StoreQuery {
@@ -180,7 +224,7 @@ export class StoreQuery {
 
                 try {
                     db.collection(this.collection)
-                        .update(this.condition, {$set: data} );
+                        .update(this.condition, { $set: data });
                     resolve();
                 } catch (ex) {
                     Log.fail(`Failed to update data ${JSON.stringify(data)} given conditions ${JSON.stringify(this.condition)}. ${JSON.stringify(ex)}`)
@@ -197,7 +241,8 @@ export class StoreQuery {
         return this.toArray()
             .then(x => {
                 if (x.length === 0)
-                    return defaultIfNone;
+                    return defaultIfNone || null;
+                
                 else if (x.length > 1)
                     Log.fail(`More than one match found at Store.scalar() for ${this.collection}?${JSON.stringify(this.condition)}. Returning first item silently.`);
 
@@ -208,17 +253,55 @@ export class StoreQuery {
                 }
 
                 if (scalarResult == null)
-                    return defaultIfNone;
+                    return defaultIfNone || null;
 
                 return scalarResult as T;
             });
     }
 
+    count(ignoreSkipAndTake?: boolean): Promise<number> {
+        return new Promise((resolve, reject) => {
+            this.client.connect(this.url, (err, db) => {
+                if (err) {
+                    if (!db && err.message.startsWith("connect ECONNREFUSED")) {
+                        err.message = "Cannot connect to database! " + err.message;
+                        reject(err);
+                        return;
+                    }
+
+                    db && db.close();
+                    reject(err);
+                    return;
+                }
+
+                let options = {};
+
+                if (!ignoreSkipAndTake) {
+                    if (this.skipCount != null)
+                        options["skip"] = this.skipCount;
+
+                    if (this.takeCount != null)
+                        options["limit"] = this.takeCount;
+                }
+
+                db.collection(this.collection)
+                    .count(this.condition || {}, options)
+                    .then(result => {
+                        db.close();
+                        resolve(result);
+                    }).catch(ex => {
+                        db.close();
+                        Log.fail(`Failed getting count Store.count() given conditions ${JSON.stringify(this.condition)} and options ${JSON.stringify(options)}. ${JSON.stringify(ex)}`)
+                        reject(ex);
+                    });
+            });
+        });
+    }
+
     single<T>(): Promise<T> {
         return this.toArray()
             .then(x => {
-                if (x.length === 0)
-                {
+                if (x.length === 0) {
                     Log.fail(`Cannot find item given conditions for at Store.single given ${this.collection}?${JSON.stringify(this.condition)}`);
                     throw new Error(`Cannot find item given conditions for ${this.collection}?${JSON.stringify(this.condition)}`);
                 }
@@ -229,13 +312,25 @@ export class StoreQuery {
             });
     }
 
+    toPagable<T>(): Promise<{results: T[]; count: number}> {
+        let count = 0;
+
+        return this.count(true)
+            .then(x => {
+                count = x;
+                return this.toArray<T>();
+            }).then(x => ({
+                results: x,
+                count: count
+            }));
+    }
+
     toArray<T>(): Promise<T[]> {
         return new Promise((resolve, reject) => {
             this.client.connect(this.url, (err, db) => {
                 if (err) {
-                    if (!db && err.message.startsWith("connect ECONNREFUSED"))
-                    {
-                        err.message = "Cannot connect to database! " + err.message; 
+                    if (!db && err.message.startsWith("connect ECONNREFUSED")) {
+                        err.message = "Cannot connect to database! " + err.message;
                         reject(err);
                         return;
                     }
@@ -278,5 +373,5 @@ export class StoreQuery {
                 });
             });
         });
-    }   
+    }
 }

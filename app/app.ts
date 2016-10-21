@@ -11,20 +11,19 @@ import StaticController from "./controllers/static.controller";
 import AdminController from "./controllers/admin.controller";
 import "reflect-metadata";
 import Log from "./utils/log";
-import extract from "./utils/regex";
+import Regex from "./utils/regex";
+import Redirect from "./redirect";
 
 export default class App {
-    private port = process.env.port || 1337;
-    private app;
+    private app; uploader;
 
     start() {
         const express = require("express");
         const bodyParser = require("body-parser");
         const session = require('express-session');
-
         const http = require("http");
         const hbs = require("hbs");
-
+        const multer = require('multer')
         this.extendHbs(hbs);
 
         this.app = express();
@@ -45,8 +44,8 @@ export default class App {
 
         this.registerRoutes();
 
-        http.createServer(this.app)
-            .listen(this.port);
+        const port = +(process.argv.mapFirst(x => x.extract(/--port=(\d+)/i)) || 80);
+        http.createServer(this.app).listen(port);
     }
 
     private registerRoutes() {
@@ -65,40 +64,12 @@ export default class App {
 
     private customRedirects(router: Router) {
         router.redirect("/redirect", query => {
-            const link = query.goto;
+            const newPath = Redirect.resolve(<string>query.goto);
 
-            if (link == null || link === "" || link === "/")
-                return "/";
+            if (newPath ===  "/")
+                Log.warn(`Unexpected route: '${newPath}'. Redirecting to /`);
 
-            if ((/^\/?portfolio\/?$/i).test(link))
-                return "/portfolio"
-
-            if ((/^\/?blog\/?$/i).test(link))
-                return "/blog"
-
-            if ((/^\/?about\/?$/i).test(link))
-                return "/about"
-
-            if ((/^\/?projects\/?$/i).test(link))
-                return "/portfolio"
-
-            if ((/^\/?project\/?$/i).test(link))
-                return "/portfolio"
-
-            const projectExtract = extract(link, "^/?portfolio/(.+)");
-            if (projectExtract) return `/portfolio/${projectExtract[0]}`;
-            
-            const project2Extract = extract(link, "^/?projects/(.+)");
-            if (project2Extract) return `/portfolio/${project2Extract[0]}`;
-            
-            const project3Extract = extract(link, "^/?project/(.+)");
-            if (project3Extract) return `/portfolio/${project3Extract[0]}`;
-            
-            const postExtract = extract(link, "^/?(\\d+)");
-            if (postExtract) return `/blog/${postExtract}`;
-            
-            Log.warn(`Unexpected route: '${link}'. Redirecting to /`);
-            return "/";
+            return newPath;
         });
     }
 
@@ -131,6 +102,20 @@ export default class App {
                 return options.fn(this);
             }
         });
+
+        handlebars.registerHelper("any", function (value, options) { 
+            if (value === 0) 
+                return options.inverse(this); 
+ 
+            return options.fn(this); 
+        }); 
+ 
+        handlebars.registerHelper("plural", function (value, options) { 
+            if (value === 1) 
+                return ""; 
+            
+            else return "s"; 
+        }); 
     }
 
     private registerPartials(handlebars, templates: string[]) {

@@ -4,5 +4,6 @@ export default class AdminModel {
     user: string;
     passHash: string;
     salt: string;
-    lastLoggedIn: string;
+    lastLoggedIn: Date;
+    lastCommentsRead: Date;
 }

@@ -21,6 +21,11 @@
                 <li class="group-starter" title="Create new project"><a href="/portfolio/add">+</a></li>
                 <li><a href="/admin/portfolio" title="List all projects">Projects</a></li>
                 <li class="group-starter" title="List all logs"><a href="/admin/logs">Logs</a></li>
+                <li class="group-starter" title="List all responses">
+                    <a href="/admin/comments">responses</a>
+                    {{#if hasUnread}}<span class="unread-count">{{unreadCount}}</span>{{/if}}
+                </li>
+                
                 <li class="right-align" title="Log out of Admin mode"><a href="/logout">Logout</a></li>
             </ul>
         </div>
@@ -51,7 +56,15 @@
             <li>
                 <div class="frontpage-post-thumbnail" style="background-image: url('{{featureImageUrl}}')"></div>
                 <a href="/blog/{{id}}/{{slug}}"><h3 class="frontpage-post-title">{{title}}</h3></a>
-                <div class="frontpage-post-date">{{relativeDate}}</div>
+                <div class="frontpage-post-meta">
+                    <span class="frontpage-post-date">{{relativeDate}}</span>
+                    <span class="frontpage-post-meta-separator">&bull;</span>
+                    <span class="frontpage-post-minutes">{{readTime}} min read</span>
+                    {{#any commentCount}}
+                        <span class="frontpage-post-meta-separator">&bull;</span>
+                        <span class="frontpage-post-comments">{{commentCount}} response{{#plural commentCount}}{{/plural}}</span>
+                    {{/any}}
+                </div>
                 <div class="frontpage-post-summary">{{{summary}}}</div>
             </li>
             {{/each}}
