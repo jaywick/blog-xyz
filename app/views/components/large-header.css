@@ -1,0 +1,63 @@
+#frontpage-header {
+    background-image: url(/background.jpg);
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100vh;
+}
+
+#frontpage-welcome {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#frontpage-welcome .focus {
+    color: white;
+}
+
+.subtitle {
+    font-size: 1.5em;
+    opacity: 0.7;
+}
+
+.title {
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    font-weight: 400;
+    font-size: 3em;
+    margin-bottom: 10px;
+    opacity: 0.95;
+}
+
+#nav {
+    list-style-type: none;
+    text-transform: lowercase;
+    margin: 0;
+    margin-right: 3rem;
+    padding: 0;
+    text-align: right;
+    flex-grow: 1;
+}
+
+#nav li {
+    display: inline;
+    padding: 0;
+    padding: 0 1rem;
+}
+
+#nav > li > a {
+    color: white;
+    opacity: 0.9;
+}
+
+#nav > li > a:hover {
+    color: white;
+    opacity: 1;
+}
+
+.nav-container {
+    position: absolute;
+    top: calc(20%/3);
+    right: 0;
+}

@@ -1,41 +1,43 @@
-# blog-xyz
-Public fork of my http://jaywick.xyz site
+# Setup
 
-# Prerequisites
-* mongodb
-* Node 5.7.0+
-* vscode for development (optional, but seriously recommended)
+Install
 
-Install global packages
+* Node 9+
+* Yarn
 
-    npm install typescript@1.8.10 -g
-    npm install es6-promise -g
-    npm install mongodb -g
-    npm install typings -g
-    npm install forever -g
+In your hosts file map `xyz-store` to `localhost`
 
-Get the packages dependancies
+Link your s3 bucket for public folders in FeatureImgUrl transformer
 
-    npm install 
+Create mongodb dbs `xyz-blog-logging` and `xyz-blog`
 
-Get typings
+# Building the images
 
-    typings install
+Build the docker image
 
-The build process simply involves transpiling Typescript to JS
+    docker build -t xyz-web-img .
 
-    tsc -p .
+# Running containers
 
-With `mongod` running, run
+Run the db
 
-    forever start entry.js
+    docker run --name xyz-store -d mongo
 
-Or to debug vscode simply click <kbd>F5</kbd> to launch Node and attach to process.
+Run the web app
 
-Stop the forever script using
+    docker run -d --name xyz-web -p 80:80 --link xyz-store xyz-web-img
 
-    forever stop entry.js
+# Deploying
 
-# License
+Log in to registry
 
-This code is protected by [GPL3](LICSENSE).
+    docker login YOUR_DOCKER_REGISTRY
+
+Build and push image to registry (from workspace)
+
+    docker build -t YOUR_DOCKER_REGISTRY/IMAGE_NAME .
+    docker push YOUR_DOCKER_REGISTRY/IMAGE_NAME
+
+Pull and run image from registry (on deployment environment)
+
+    docker run -d --name xyz-web -p 80:80 --link xyz-store YOUR_DOCKER_REGISTRY/IMAGE_NAME

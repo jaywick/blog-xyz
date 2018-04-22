@@ -1,0 +1,24 @@
+.error-page {
+    background-image: url(/ohnoes.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    display: flex;
+    align-items: center;
+    justify-self: center;
+    height: 100vh;
+    padding: 0 10%;
+}
+
+.error-info {
+    color: white;
+    font-size: 2em;
+    line-height: 2em;
+}
+
+.error-info pre {
+    background: rgba(137, 137, 137, 0.36);
+    color: white;
+    font-size: 1.5rem;
+    white-space: pre-wrap;
+}

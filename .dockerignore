@@ -1,0 +1,8 @@
+.git
+.vscode
+node_modules
+media
+dist
+certs
+res/dev
+res/css

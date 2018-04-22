@@ -1,40 +1,45 @@
-import Store from "../store";
-import LogModel from "../models/log.model";
+import { LoggingStore } from '../store'
 
-export default class Log {
-    static store: Store;
-
-    constructor() {
+export class Log {
+    constructor(private store: LoggingStore) {
     }
 
-    static initialise() {
-        Log.store = new Store();
+    private write(message: string, ip: string, severity: 'debug' | 'info' | 'warn' | 'fail') {
+        this.consoleLog(message, severity)
+
+        this.store.logs.insert({
+            message,
+            severity,
+            date: new Date(),
+            ip,
+        })
     }
 
-    static write(message: string, ip?, severity?: "log" | "warn" | "fail" | "stat") {
-        if (!Log.store)
-        {
-            console.error(`Failed to log error. ${message}`);
-            return;
+    private consoleLog(message: string, severity: 'debug' | 'info' | 'warn' | 'fail') {
+        if (!this.store) {
+            console.error(`Failed to log error. ${message}`)
+            return
         }
 
-        const entry = new LogModel();
-        entry.message = message;
-        entry.severity = severity || "log";
-        entry.date = new Date();
-        entry.ip = ip;
-        Log.store.logs.insert(entry);
+        if (severity === 'fail') console.error(message)
+        if (severity === 'warn') console.warn(message)
+        if (severity === 'info') console.info(message)
+        if (severity === 'debug') console.debug(message)
     }
 
-    static warn(message: string, ip?) {
-        Log.write(message, ip, "warn")
+    debug(message: string, ip?: string) {
+        this.write(message, ip, 'debug')
     }
 
-    static fail(message: string, ip?) {
-        Log.write(message, ip, "log");
+    info(message: string, ip?: string) {
+        this.write(message, ip, 'info')
     }
 
-    static stat(message: string, ip) {
-        Log.write(message, ip, "stat");
+    warn(message: string, ip?: string) {
+        this.write(message, ip, 'warn')
+    }
+
+    fail(message: string, ip?: string) {
+        this.write(message, ip, 'fail')
     }
 }

@@ -1,0 +1,15 @@
+.filter-description-panel {
+    background-color: #efefef;
+    padding: 1.5em 0.1em;
+}
+
+.filter-description {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.filter-description-untag::before {
+    color: #d6236d;
+    content: '✕'
+}
